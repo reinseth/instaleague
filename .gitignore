@@ -1,0 +1,7 @@
+.cpcache
+.env
+.idea
+.shadow-cljs
+build
+node_modules
+*.iml
