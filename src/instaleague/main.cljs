@@ -19,7 +19,7 @@
   (let [route (:route state)
         page (pages-map (:id route))
         rendered (if page
-                   ((:render page) (:sub/data state) route state)
+                   ((:render page) (:db/data state) route state)
                    [:div "Not found"])]
     (replicant/render (js/document.getElementById "root") rendered)))
 
@@ -41,6 +41,30 @@
       :event/prevent-default (.preventDefault event)
       (js/console.error "Unknown action" action))))
 
+(defn handle-db-result [{:db/keys [q error data] :as res}]
+  (when (= q (:db/q @store))
+    (if error
+      (do (js/console.error error res)
+          (swap! store assoc :db/data :error))
+      (swap! store assoc :db/data data))))
+
+(defn handle-route-change [match]
+  (let [state @store
+        page (pages-map (:id match))
+        q (when page ((:query page) match state))]
+    (when-let [unsubscribe (:db/unsubscribe state)] (unsubscribe))
+    (if q
+      (swap! store assoc
+             :route match
+             :db/data :loading
+             :db/q q
+             :db/unsubscribe (instantdb/subscribe-query db q handle-db-result))
+      (swap! store assoc
+             :route match
+             :db/data nil
+             :db/q nil
+             :db/unsubscribe nil))))
+
 (defn ^:export init []
   (replicant/set-dispatch!
    (fn [{:keys [replicant/dom-event]} actions]
@@ -48,15 +72,6 @@
           (interpolate dom-event)
           (execute-actions dom-event))))
   
-  (add-watch
-   store ::me
-   (fn [_ _ _ new-val] (render new-val)))
-
-  (router/start
-   pages
-   (fn [match]
-     (when-let [page (pages-map (:id match))]
-       (instantdb/subscribe-query db store ((:query page) match @store)))
-     (swap! store assoc :route match)))
-  
+  (add-watch store ::me (fn [_ _ _ new-val] (render new-val)))
+  (router/start pages handle-route-change)
   (swap! store assoc :initialized (js/Date.now)))
