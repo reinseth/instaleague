@@ -24,6 +24,14 @@ The app consists of [pages](./src/instaleague/page.cljs) that each define the fo
 - `:render` a function that takes the query result, either `:loading`, `:error` or the returned
 data, along with the route parameters and app state
 
+All effects (network/state) are handled at the top level in `main.cljs` following the [Functional
+core, imperative
+shell](https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell)
+architecture.
+
+See the different [Replicant tutorials](https://replicant.fun/tutorials/state-atom/) for a detailed
+guide of how to employ this architecture for different scenarios.
+
 ## Questions
 
 - Can Instant also serve as a local and transient database? Or can we create a separate database
