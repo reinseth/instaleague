@@ -17,17 +17,4 @@
        (on-result {:db/data (js->clj (.-data res) :keywordize-keys true) :db/q q})))))
 
 (defn transact [^js db txs]
-  (.transact
-   db
-   (clj->js
-    (map (fn [[action entity id data]]
-           (let [proxy (-> (.-tx db)
-                           (aget (if (keyword? entity)
-                                   (name entity)
-                                   entity))
-                           (aget id))
-                 prepped-data (clj->js data)]
-             (case action
-               :update (.update proxy prepped-data)
-               :delete (.delete proxy prepped-data))))
-         txs))))
+  (.transact db (clj->js {:__ops txs})))
