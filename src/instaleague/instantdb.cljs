@@ -20,10 +20,10 @@
   "Transact a list of steps/ops onto the database. A step is a vector in the form of 
   `[action entity-type entity-id data]`.
 
-  - `action` - on of :update, :merge, :delete, :link, :unlink
-  - `entity-type` - the name of the entity/table (can be given as a keyword)
+  - `action` - one of :update, :merge, :delete, :link, :unlink
+  - `entity-type` - the name of the entity / table (can be given as a keyword)
   - `entity-id` - the unique id of the entity
-  - `data` - a map of key/vals
+  - `data` - a map of key / vals
 
   These step shapes are what the tx proxy in the underlying javascript library creates, e.g:
 
