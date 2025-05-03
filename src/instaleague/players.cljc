@@ -6,7 +6,7 @@
   (some #(= (str/lower-case (or name ""))
             (str/lower-case (:name %))) players))
 
-(defn add-player [data state]
+(defn add-player [{:db/keys [data] :as state}]
   (let [name (str/trim (or (:new-player/name state) ""))]
     (into [[:event/prevent-default]]
           (cond
@@ -28,13 +28,13 @@
   (page/define
     {:id :pages/players
      :route ["players"]
-     :query (fn [_route _state]
+     :query (fn [_state]
               {:players {}})
      :render
-     (fn [data _route state]
+     (fn [{:db/keys [data] :as state}]
        [:div.container.mx-auto.flex.flex-col.gap-4.mt-4.p-4
         [:h1.text-xl "Players"]
-        [:form.flex.gap-2 {:on {:submit (add-player data state)}}
+        [:form.flex.gap-2 {:on {:submit (add-player state)}}
          [:input.input {:class (when (:new-player/validation-error state) "input-error")
                         :placeholder "Name"
                         :autofocus true

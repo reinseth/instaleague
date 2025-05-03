@@ -19,7 +19,7 @@
   (let [route (:route state)
         page (pages-map (:id route))
         rendered (if page
-                   ((:render page) (:db/data state) route state)
+                   ((:render page) state)
                    [:div "Not found"])]
     (replicant/render (js/document.getElementById "root") rendered)))
 
@@ -51,7 +51,7 @@
 (defn handle-route-change [match]
   (let [state @store
         page (pages-map (:id match))
-        q (when page ((:query page) match state))]
+        q (when page ((:query page) state))]
     (when-let [unsubscribe (:db/unsubscribe state)] (unsubscribe))
     (if q
       (swap! store assoc
