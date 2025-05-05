@@ -1,7 +1,8 @@
 (ns instaleague.players
   (:require [clojure.string :as str]
             [instaleague.forms :refer [text-input]]
-            [instaleague.page :as page]))
+            [instaleague.page :as page]
+            [instaleague.icons :as icons]))
 
 (defn contains-name? [players name]
   (some #(= (str/lower-case (or name ""))
@@ -42,7 +43,7 @@
       [:div.list-col-grow.self-center (:name player)]
       [:button.btn.btn-ghost
        {:on {:click (delete-player player)}}
-       "x"]])])
+       (icons/render :x)]])])
 
 (def players-page
   (page/define
