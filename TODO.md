@@ -5,7 +5,7 @@
 - [x] Add player
 - [x] Remove player
 - [x] Employ the declarative forms concept from https://replicant.fun/tutorials/declarative-forms/
-- [ ] Edit player
+- [x] Edit player
 - [ ] Setup leagues page
 - [ ] Add league with current players
 - [ ] Create league fixture

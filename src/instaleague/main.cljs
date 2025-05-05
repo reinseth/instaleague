@@ -44,6 +44,7 @@
         :assoc-in (apply swap! store assoc-in args)
         :db/transact (apply instantdb/transact db args)
         :event/prevent-default (.preventDefault event)
+        :event/stop-propagation (.stopPropagation event)
         :form/validate (execute-actions
                         event
                         (interpolate event (apply forms/validate state forms args)))
