@@ -1,5 +1,6 @@
 (ns instaleague.main
   (:require [clojure.walk :as walk]
+            [instaleague.forms :as forms]
             [instaleague.instantdb :as instantdb]
             [instaleague.players :refer [players-page]]
             [instaleague.router :as router]
@@ -15,9 +16,11 @@
 
 (def pages-map (into {} (map (juxt :id identity)) pages))
 
+(defn current-page [state]
+  (pages-map (-> state :route :id)))
+
 (defn render [state]
-  (let [route (:route state)
-        page (pages-map (:id route))
+  (let [page (current-page state)
         rendered (if page
                    ((:render page) state)
                    [:div "Not found"])]
@@ -34,12 +37,23 @@
 
 (defn execute-actions [event actions]
   (doseq [[action & args] (remove nil? actions)]
-    (apply prn action args)
-    (case action
-      :assoc-in (apply swap! store assoc-in args)
-      :db/transact (apply instantdb/transact db args)
-      :event/prevent-default (.preventDefault event)
-      (js/console.error "Unknown action" action))))
+    (let [state @store
+          forms (:forms (current-page state))]
+      (apply prn action args)
+      (case action
+        :assoc-in (apply swap! store assoc-in args)
+        :db/transact (apply instantdb/transact db args)
+        :event/prevent-default (.preventDefault event)
+        :form/validate (execute-actions
+                        event
+                        (interpolate event (apply forms/validate state forms args)))
+        :form/submit (do
+                       (.preventDefault event)
+                       (execute-actions
+                        event
+                        (interpolate event (apply forms/submit state forms args))))
+        :form/reset (execute-actions event (interpolate event (apply forms/reset args)))
+        (js/console.error "Unknown action" action)))))
 
 (defn handle-db-result [{:db/keys [q error data] :as res}]
   (when (= q (:db/q @store))
