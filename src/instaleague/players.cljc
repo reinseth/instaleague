@@ -50,7 +50,7 @@
   [:div.list.rounded-box.shadow-md.bg-base-100
    (for [player (:players data)]
      (if (= (:id player) (get-in state [:edit-player :id]))
-       [:form.list-row {:replicant?/key (:id player)
+       [:form.list-row {:replicant/key (:id player)
                         :on {:submit [[:form/submit :edit-player]]}}
         (text-input state :edit-player :name {:placeholder "Name"
                                               :autofocus true
