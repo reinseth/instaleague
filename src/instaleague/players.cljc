@@ -69,7 +69,7 @@
         [:div.list-col-grow.self-center (:name player)]
         [:button.btn.btn-ghost
          {:on {:click (delete-player player)}}
-         (icons/render :x)]]))])
+         (icons/render :trash)]]))])
 
 (def players-page
   (page/define

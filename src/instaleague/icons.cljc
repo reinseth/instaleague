@@ -3,7 +3,8 @@
 
 (def icons
   {:check (i/icon :phosphor.regular/check)
-   :x (i/icon :phosphor.regular/x)})
+   :x (i/icon :phosphor.regular/x)
+   :trash (i/icon :phosphor.regular/trash-simple)})
 
 (defn size-to-css-value [size]
   (case (or size :md)
