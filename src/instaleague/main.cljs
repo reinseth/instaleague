@@ -14,15 +14,15 @@
 
 (def pages [players-page])
 
-(def pages-map (into {} (map (juxt :id identity)) pages))
+(def pages-map (into {} (map (juxt :page/id identity)) pages))
 
 (defn current-page [state]
-  (pages-map (-> state :route :id)))
+  (pages-map (-> state :route :page/id)))
 
 (defn render [state]
   (let [page (current-page state)
         rendered (if page
-                   ((:render page) state)
+                   ((:page/render page) state)
                    [:div "Not found"])]
     (replicant/render (js/document.getElementById "root") rendered)))
 
@@ -38,7 +38,7 @@
 (defn execute-actions [event actions]
   (doseq [[action & args] (remove nil? actions)]
     (let [state @store
-          forms (:forms (current-page state))]
+          forms (:page/forms (current-page state))]
       (apply prn action args)
       (case action
         :assoc-in (apply swap! store assoc-in args)
@@ -65,8 +65,8 @@
 
 (defn handle-route-change [match]
   (let [state @store
-        page (pages-map (:id match))
-        q (when page ((:query page) state))]
+        page (pages-map (:page/id match))
+        q (when page ((:page/query page) state))]
     (when-let [unsubscribe (:db/unsubscribe state)] (unsubscribe))
     (if q
       (swap! store assoc

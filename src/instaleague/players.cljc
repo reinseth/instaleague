@@ -62,10 +62,10 @@
          [:button.btn.btn-ghost
           {:type :button :on {:click [[:form/reset :edit-player]]}}
           (icons/render :x)]]]
-       [:li.list-row {:replicant/key (:id player)
-                      :role "button"
-                      :tabindex 0
-                      :on {:click (edit-player player)}}
+       [:div.list-row {:replicant/key (:id player)
+                       :role "button"
+                       :tabindex 0
+                       :on {:click (edit-player player)}}
         [:div.list-col-grow.self-center (:name player)]
         [:button.btn.btn-ghost
          {:on {:click (delete-player player)}}
@@ -73,18 +73,18 @@
 
 (def players-page
   (page/define
-    {:id :players
-     :route ["players"]
-     :query (fn [_state] {:players {}})
-     :forms [{:form/id :new-player
-              :form/fields [{:field/name :name
-                             :field/validate validate-name}]
-              :form/submit (fn [_state form-data] (save-player :new-player form-data))}
-             {:form/id :edit-player
-              :form/fields [{:field/name :name
-                             :field/validate validate-name}]
-              :form/submit (fn [_state form-data] (save-player :edit-player form-data))}]
-     :render
+    {:page/id :players
+     :page/route ["players"]
+     :page/query (fn [_state] {:players {}})
+     :page/forms [{:form/id :new-player
+                   :form/fields [{:field/name :name
+                                  :field/validate validate-name}]
+                   :form/submit (fn [_state form-data] (save-player :new-player form-data))}
+                  {:form/id :edit-player
+                   :form/fields [{:field/name :name
+                                  :field/validate validate-name}]
+                   :form/submit (fn [_state form-data] (save-player :edit-player form-data))}]
+     :page/render
      (fn [state]
        [:div.container.mx-auto.flex.flex-col.gap-4.mt-4.p-4
         [:h1.text-xl "Players"]

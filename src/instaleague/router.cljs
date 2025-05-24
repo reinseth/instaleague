@@ -3,7 +3,7 @@
             [reitit.frontend.easy :as rfe]
             [reitit.frontend :as rf]))
 
-(defn route-template [{:keys [route]}]
+(defn route-template [{:page/keys [route]}]
   (str "/" (str/join "/" route)))
 
 (comment
@@ -13,7 +13,7 @@
   (rfe/start!
    (rf/router (map (juxt route-template identity) pages))
    (fn [{:keys [data path-params query-params]}]
-     (on-navigate {:id (:id data :not-found)
+     (on-navigate {:page/id (:page/id data) 
                    :path-params path-params
                    :query-params query-params}))
    {:use-fragment false}))
