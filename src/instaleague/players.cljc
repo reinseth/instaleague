@@ -38,9 +38,6 @@
   [[:assoc-in [:edit-player :id] (:id player)]
    [:assoc-in [:edit-player :name :value] (:name player)]])
 
-(defn cancel-edit-player []
-  [[:assoc-in [:edit-player] nil]])
-
 (defn render-new-player-form [state]
   [:form.flex.gap-2 {:on {:submit [[:form/submit :new-player]]}}
    (text-input state :new-player :name {:placeholder "Name", :autofocus true})
