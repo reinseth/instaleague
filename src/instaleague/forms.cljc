@@ -24,7 +24,9 @@
          :value (:value field)
          :on {:input [[:assoc-in [form-id field-id :value] :event/target.value]
                       (when error
-                        [:form/validate form-id field-id])]}}
+                        [:form/validate form-id field-id])]}
+         :replicant/on-mount (when (:autofocus attrs)
+                               [[:node/focus]])}
         (cond-> attrs
           error
           (update :class conj "input-error")))]

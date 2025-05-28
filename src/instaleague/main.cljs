@@ -35,25 +35,23 @@
        x))
    actions))
 
-(defn execute-actions [event actions]
-  (doseq [[action & args] (remove nil? actions)]
+(defn execute-actions [{:replicant/keys [dom-event node] :as event-data} actions]
+  (doseq [[action & args] (interpolate dom-event (remove nil? actions))]
     (let [state @store
           forms (:page/forms (current-page state))]
       (apply prn action args)
       (case action
         :assoc-in (apply swap! store assoc-in args)
         :db/transact (apply instantdb/transact db args)
-        :event/prevent-default (.preventDefault event)
-        :event/stop-propagation (.stopPropagation event)
-        :form/validate (execute-actions
-                        event
-                        (interpolate event (apply forms/validate state forms args)))
+        :event/prevent-default (.preventDefault dom-event)
+        :event/stop-propagation (.stopPropagation dom-event)
+        :form/validate (execute-actions event-data (apply forms/validate state forms args))
         :form/submit (do
-                       (.preventDefault event)
-                       (execute-actions
-                        event
-                        (interpolate event (apply forms/submit state forms args))))
-        :form/reset (execute-actions event (interpolate event (apply forms/reset args)))
+                       (.preventDefault dom-event)
+                       (execute-actions event-data (apply forms/submit state forms args)))
+        :form/reset (execute-actions event-data (apply forms/reset args))
+        :node/focus (when node
+                      (.focus node))
         (js/console.error "Unknown action" action)))))
 
 (defn handle-db-result [{:db/keys [q error data] :as res}]
@@ -81,12 +79,7 @@
              :db/unsubscribe nil))))
 
 (defn ^:export init []
-  (replicant/set-dispatch!
-   (fn [{:keys [replicant/dom-event]} actions]
-     (->> actions
-          (interpolate dom-event)
-          (execute-actions dom-event))))
-  
+  (replicant/set-dispatch! #'execute-actions)
   (add-watch store ::me (fn [_ _ _ new-val] (render new-val)))
   (router/start pages handle-route-change)
   (swap! store assoc :initialized (js/Date.now)))
