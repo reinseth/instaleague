@@ -51,9 +51,9 @@
                                     ((:field/validate field) state form-data (get form-data (:field/name field))))))
                             fields)
         has-error? (some second validation-results)
-        store-validations (map (fn [field]
-                                 [:assoc-in [form-id (:field/name field) :error] (validation-results (:field/name field))])
-                               fields)]
+        store-validations (mapv (fn [field]
+                                  [:assoc-in [form-id (:field/name field) :error] (validation-results (:field/name field))])
+                                fields)]
     (into
      store-validations
      (when-not has-error?
